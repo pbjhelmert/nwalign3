@@ -8621,11 +8621,10 @@ static void __Pyx_AddTraceback(const char *funcname) {
     if (!py_funcname) goto bad;
     py_globals = PyModule_GetDict(__pyx_m);
     if (!py_globals) goto bad;
+    #if PY_MAJOR_VERSION < 3
     py_code = PyCode_New(
         0,            /*int argcount,*/
-        #if PY_MAJOR_VERSION >= 3
         0,            /*int kwonlyargcount,*/
-        #endif
         0,            /*int nlocals,*/
         0,            /*int stacksize,*/
         0,            /*int flags,*/
@@ -8640,6 +8639,19 @@ static void __Pyx_AddTraceback(const char *funcname) {
         __pyx_lineno,   /*int firstlineno,*/
         __pyx_empty_bytes  /*PyObject *lnotab*/
     );
+    #else
+    /* according to PyCode_New documentation, "If you need a dummy
+     * code object to create a frame, use PyCode_NewEmpty()
+     * instead. Calling PyCode_New() directly will bind you to a precise
+     * Python version since the definition of the bytecode changes
+     * often."
+    */
+    py_code = PyCode_NewEmpty(
+        py_srcfile, /*PyObject *filename,*/
+        py_funcname, /*PyObject *name,*/
+        __pyx_lineno /*int firstlineno,*/
+    );
+    #endif
     if (!py_code) goto bad;
     py_frame = PyFrame_New(
         PyThreadState_GET(), /*PyThreadState *tstate,*/
