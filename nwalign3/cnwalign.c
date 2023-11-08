@@ -8660,7 +8660,7 @@ static void __Pyx_AddTraceback(const char *funcname) {
         0                    /*PyObject *locals*/
     );
     if (!py_frame) goto bad;
-    py_frame->f_lineno = __pyx_lineno;
+    /* py_frame->f_lineno = __pyx_lineno; */
     PyTraceBack_Here(py_frame);
 bad:
     Py_XDECREF(py_srcfile);
